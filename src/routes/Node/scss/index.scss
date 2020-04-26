@@ -1,0 +1,32 @@
+.node-manage-container {
+  padding: 16px;
+
+  .node-manage-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    height: 32px;
+    line-height: 32px;
+    padding: 0;
+    background-color: transparent;
+
+    .operation-list {
+
+    }
+
+    .research-list {
+      .research-item {
+        display: inline-block;
+
+        &.select-list {
+          margin-right: 10px;
+        }
+      }
+    }
+
+    .ant-btn {
+      margin-right: 8px;
+      margin-bottom: 8px;
+    }
+  }
+}
