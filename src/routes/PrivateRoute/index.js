@@ -14,7 +14,8 @@ component: Component,
 <Route {...rest} render={(props) => (
     !!isAuthenticated()
       ? <Component {...props} />: <Redirect to={{
-        pathname: '/login',
+        //pathname: '/login',
+        pathname: '/home',
         state: {from: props.location}
       }}/>
 )

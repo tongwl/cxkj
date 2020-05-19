@@ -7,10 +7,6 @@ const { Header, Content } = Layout;
 const { Option } = Select;
 
 class Node extends Component<any, any> {
-  constructor(props) {
-    super(props);
-  }
-
   render() {
     const columns = [
       {

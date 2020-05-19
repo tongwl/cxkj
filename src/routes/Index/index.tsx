@@ -1,14 +1,5 @@
 import React, { Component } from 'react';
-import { Layout, Menu, Breadcrumb } from 'antd';
-import {
-  DesktopOutlined,
-  PieChartOutlined,
-  LaptopOutlined,
-  NotificationOutlined,
-  FileOutlined,
-  TeamOutlined,
-  UserOutlined,
-} from '@ant-design/icons';
+import { Layout } from 'antd';
 import ContentMain from '../../component/ContentMain/';
 import SideMenu from '../../component/SiderMenu';
 import Copyright from '../../utils/Copyright';
@@ -17,7 +8,6 @@ import Copyright from '../../utils/Copyright';
 import './css/index.scss';
 
 const { Header, Content, Footer, Sider } = Layout;
-const { SubMenu } = Menu;
 
 interface IAppState {
   collapsed: boolean;

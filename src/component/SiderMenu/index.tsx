@@ -87,7 +87,7 @@ export default () => {
   return (
     <Fragment>
       <div className="logo-container">
-        <img src={require("../../assets/img/cx_logo2.svg")} className="logo" />
+        <img src={require("../../assets/img/cx_logo2.svg")} className="logo" alt="cxkj"/>
       </div>
       <CustomMenu menus={menus}/>
     </Fragment>

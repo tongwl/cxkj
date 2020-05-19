@@ -5,10 +5,6 @@ import Home from '../../routes/Home/';
 import Node from '../../routes/Node';
 
 export default class ContentMain extends Component<any, any> {
-  constructor(props) {
-    super(props);
-  }
-
   render() {
     return (
       <Fragment>
