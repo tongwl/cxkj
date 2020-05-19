@@ -9,7 +9,7 @@ export default () => {
   return (
     <Switch>
       <Route exact path="/login" component={Login} />
-      <PrivateRoute path="/"  component={Index}/>
+      <Route path="/"  component={Index}/>
     </Switch>
   );
 }

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Button, Input, Layout, Progress, Select, Table } from 'antd';
+import axios from 'axios';
 import './scss/index.scss';
 
 const { Search } = Input;
@@ -111,7 +112,21 @@ class Node extends Component<any, any> {
   }
 
   componentDidMount() {
+    this.getNodeList();
+  }
 
+  getNodeList() {
+    axios({
+      method: 'get',
+      url: 'https://172.16.110.100/api/types/System/instances',
+      auth: {
+        username: '',
+        password: 'YWRtaW46MTU4ODUxNzQ5NzEyOTo0OWUwOTFlMzZhYjllYzk3MTZmODRkMmZhODBiMGQyMg'
+      }
+    }).then(result=>{
+      console.log("11111");
+      console.log(result);
+    });
   }
 }
 
