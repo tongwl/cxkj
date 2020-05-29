@@ -1,0 +1,13 @@
+.node-container-delete-node-modal {
+  .ant-modal-content {
+    .ant-modal-body {
+      padding-bottom: 0;
+
+      .force-checkbox-container {
+        .ant-checkbox + span {
+          padding-right: 0;
+        }
+      }
+    }
+  }
+}

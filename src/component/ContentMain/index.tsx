@@ -1,6 +1,5 @@
 import React, { Component, Fragment } from 'react';
 import { Switch, Redirect, Route } from 'react-router-dom';
-import PrivateRoute from '../../routes/PrivateRoute/index.js';
 import Home from '../../routes/Home/';
 import Node from '../../routes/Node';
 

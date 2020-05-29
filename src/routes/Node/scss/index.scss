@@ -27,6 +27,42 @@
     .ant-btn {
       margin-right: 8px;
       margin-bottom: 8px;
+
+      &.delete-node-btn[disabled] {
+        opacity: .6;
+        color: #fff;
+        background-color: #a61d24;
+        border-color: #a61d24;
+        text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.12);
+        -webkit-box-shadow: 0 2px 0 rgba(0, 0, 0, 0.045);
+        box-shadow: 0 2px 0 rgba(0, 0, 0, 0.045);
+      }
     }
   }
+
+  .node-manage-content {
+    .ant-table-container {
+      .column-mem-ratio {
+        min-width: 110px;
+      }
+      .ant-progress {
+        position: relative;
+        .ant-progress-outer {
+          padding-right: 0;
+        }
+        .ant-progress-text {
+          position: absolute;
+          left: 12px;
+          top: 4px;
+          color: rgba(255, 255, 255, 0.75);
+        }
+      }
+
+      .ant-table-thead > tr > th, .ant-table-tbody > tr > td, .ant-table tfoot > tr > th, .ant-table tfoot > tr > td {
+        padding: 16px 6px;
+        text-align: center;
+      }
+    }
+  }
+
 }
