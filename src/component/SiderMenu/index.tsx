@@ -15,25 +15,21 @@ const menus = [
   {
     title: '概览',
     icon: <HomeOutlined />,
-    key: '/home'
+    key: '/home',
   },
   {
     title: '节点管理',
     icon: <ClusterOutlined />,
-    key: '',
-    subs: [
-      {key: '/node', title: '节点管理', icon: '',},
-      {key: '/home/general/icon', title: '硬盘管理', icon: '',},
-    ]
+    key: '/node',
   },
   {
     title: '存储卷管理',
     icon: <GroupOutlined />,
-    key: '/home/navigation',
+    key: '/StorageVolume',
     subs: [
-      {key: '/home/navigation/dropdown', title: '卷管理', icon: ''},
-      {key: '/home/navigation/menu', title: '快照策略管理', icon: ''},
-      {key: '/home/navigation/steps', title: '客户端管理', icon: ''},
+      {key: '/StorageVolume/volume', title: '卷管理', icon: ''},
+      {key: '/StorageVolume/snapshot', title: '快照策略管理', icon: ''},
+      {key: '/StorageVolume/clientManage', title: '客户端管理', icon: ''},
     ]
   },
   {

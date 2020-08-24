@@ -1,5 +1,9 @@
 @import '~antd/dist/antd.dark.css';
 /*
   会把暗黑主题给覆盖了
-  @import '~antd/dist/antd.compact.css';
+  @import '~antd/dist/antd.compact.scss';
 */
+
+.cxkj-layout-content {
+    padding: 16px;
+}

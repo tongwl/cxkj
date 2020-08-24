@@ -1,0 +1,15 @@
+@import "src/scss/colors";
+.node-container-enter-maintenance-mode-modal {
+  .ant-modal-body {
+    >p {
+      b {
+        color: $Red;
+      }
+    }
+
+    > div {
+      margin-bottom: 1rem;
+      color: $Orange;
+    }
+  }
+}

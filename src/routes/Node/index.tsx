@@ -1,10 +1,32 @@
 import React, { Component } from 'react';
-import {Button, Input, Layout, message, Select} from 'antd';
+import {
+  Button,
+  Input,
+  Layout,
+  message,
+  Select,
+  Dropdown,
+  Menu
+} from 'antd';
+import {
+  PlusCircleOutlined,
+  DeleteOutlined,
+  ToolOutlined,
+  RocketOutlined,
+  EditOutlined,
+  DownOutlined,
+  LoginOutlined,
+  LogoutOutlined
+} from '@ant-design/icons';
 import NodeListTable from "../../component/Node/Table";
 import ProtectionDomainList from "../../component/Node/ProtectionDomainList";
 import AddNodeModal from "../../component/Node/AddNodeModal";
 import DeleteNodeForm from "../../component/Node/DeleteNodeModal";
+import RenameNodeModal from "../../component/Node/RenameNodeModal";
+import EnterMaintenanceModeModal from "../../component/Node/EnterMaintenanceModeModal";
+import ExitMaintenanceModeModal from "../../component/Node/ExitMaintenanceModeModal";
 import ServiceHost from '../../utils/Host';
+import { INode, NOW } from "../../component/Node/RenameNodeModal";
 import { ProtectionDomainOptionAll } from './Utils';
 import axios from 'axios';
 import _ from 'lodash';
@@ -49,8 +71,16 @@ interface INodeState {
   searchText: string;
   addNodeModalVisible: boolean;
   deleteNodeModalVisible: boolean;
+  renameNodeModalVisible: boolean;
+  enterMaintenanceModeModalVisible: boolean;
+  exitMaintenanceModeModalVisible: boolean;
   selectedProtectionDomainName: string;
 }
+
+enum MaintenanceModeEnum {
+  ENTER='enter',
+  EXIT='exit'
+};
 
 class Node extends Component<any, INodeState> {
   nodeListInterval: any;
@@ -66,15 +96,20 @@ class Node extends Component<any, INodeState> {
       searchText: null,
       addNodeModalVisible: false,
       deleteNodeModalVisible: false,
+      renameNodeModalVisible: false,
+      enterMaintenanceModeModalVisible: false,
+      exitMaintenanceModeModalVisible: false,
       selectedProtectionDomainName: ProtectionDomainOptionAll
     }
 
     this.showAddNodeModal = this.showAddNodeModal.bind(this);
     this.showDeleteNodeModal = this.showDeleteNodeModal.bind(this);
+    this.showRenameNodeModal = this.showRenameNodeModal.bind(this);
     this.onSelectedRowKeysChange = this.onSelectedRowKeysChange.bind(this);
     this.triggerProtectionDomainChange = this.triggerProtectionDomainChange.bind(this);
     this.onSearch = this.onSearch.bind(this);
     this.getProtectionDomainOptions = this.getProtectionDomainOptions.bind(this);
+    this.enterExitMaintenanceMode = this.enterExitMaintenanceMode.bind(this);
   };
 
   onSearch(value) {
@@ -103,6 +138,54 @@ class Node extends Component<any, INodeState> {
     }));
   };
 
+  showDeleteNodeModal = () => {
+    this.setState(() => ({
+      deleteNodeModalVisible: true,
+    }));
+  }
+
+  hideDeleteNodeModal = () => {
+    this.setState(() => ({
+      deleteNodeModalVisible: false,
+    }));
+  }
+
+  showRenameNodeModal = () => {
+    this.setState(() => ({
+      renameNodeModalVisible: true,
+    }));
+  }
+
+  hideRenameNodeModal = () => {
+    this.setState(() => ({
+      renameNodeModalVisible: false,
+    }));
+  }
+
+  showEnterMaintenanceModeModal = () => {
+    this.setState(() => ({
+      enterMaintenanceModeModalVisible: true,
+    }));
+  }
+
+  hideEnterMaintenanceModeModal = () => {
+    this.setState(() => ({
+      enterMaintenanceModeModalVisible: false,
+    }));
+  }
+
+  showExitMaintenanceModeModal = () => {
+    this.setState(() => ({
+      exitMaintenanceModeModalVisible: true,
+    }));
+  }
+
+  hideExitMaintenanceModeModal = () => {
+    this.setState(() => ({
+      exitMaintenanceModeModalVisible: false,
+    }));
+  }
+
   onAddNode = params => {
     console.log('Received values of form: ', params);
     this.addNodeInstance(this.getAddNodeAPIParams(params)).then((bl) => {
@@ -122,7 +205,7 @@ class Node extends Component<any, INodeState> {
       name: name,
       protectionDomainId: protectionDomainId,
     };
-    result.forceClean = Boolean(forceClean);
+    result.forceClean = Boolean(forceClean) ? 'TRUE' : 'FALSE';
     if(faultSetId) {
       result.faultSetId = faultSetId;
     }
@@ -196,8 +279,11 @@ class Node extends Component<any, INodeState> {
   }
 
   addNodeInstance(params) {
-    console.log(params);
-    return axios.post(`${ServiceHost}/sds/instance`, params).then(res => {
+    return axios({
+      method: 'post',
+      url: `${ServiceHost}/sds/instance`,
+      data: params
+    }).then(res => {
       if(res.status === 200) {
         return true;
       } else {
@@ -209,18 +295,34 @@ class Node extends Component<any, INodeState> {
       return false;
     });
   }
-  
-  showDeleteNodeModal = () => {
-    console.log(this.state.selectedRowKeys);
-    this.setState(() => ({
-      deleteNodeModalVisible: true,
-    }));
-  }
 
-  hideDeleteNodeModal = () => {
-    this.setState(() => ({
-      deleteNodeModalVisible: false,
-    }));
+  onRenameNode = params => {
+    const sdss = [];
+    _.forIn(params, (value, key) => {
+      if(_.endsWith(key, NOW)) {
+        sdss.push(
+          axios({
+            method: 'POST',
+            url: `${ServiceHost}/sds/setSdsName`,
+            data: {
+              id: key.replace(new RegExp(NOW, 'ig'), ''),
+              name: value
+            }
+          })
+        );
+      }
+    });
+    axios.all(sdss).then((res) => {
+      message.success('修改节点名称成功！');
+    }).catch(err => {
+      message.error(<span>修改节点名称失败：<br/>{err.message}</span>);
+    }).finally(() => {
+      this.setState({
+        renameNodeModalVisible: false,
+      });
+    });
+
+
   }
 
   getNodeList() {
@@ -230,23 +332,40 @@ class Node extends Component<any, INodeState> {
     }).then(res => {
       if (res.status === 200) {
         _.each(res.data, node => {
-          node.key = node.name;
+          node.key = node.id;
         });
-        this.setState(() => ({
-          nodeList: res.data
-        }), () => {
-          this.filterNodeList();
-        });
+        if (!_.isEqual(res.data, this.state.nodeList)) {
+          this.setState(() => ({
+            nodeList: res.data
+          }), () => {
+            this.filterNodeList();
+          });
+        }
       }
     });
   }
 
   getNodeListByNames() {
-    return _.filter(this.state.nodeList, (node) => {
+    return _.filter(this.state.nodeList, node => {
       return _.some(this.state.selectedRowKeys, key => {
-        return key === node.name;
+        return key === node.id;
       });
     });
+  }
+
+  getNodeNameAndIdList(): INode[] {
+    const nodes: INode[] = [];
+    _.each(this.state.nodeList, node => {
+      if(_.some(this.state.selectedRowKeys, key => {
+        return key === node.id;
+      })) {
+        nodes.push({
+          name: node.name,
+          id: node.id
+        });
+      }
+    });
+    return nodes;
   }
 
   getProtectionDomainList() {
@@ -343,22 +462,71 @@ class Node extends Component<any, INodeState> {
     }
   }
 
+  enterExitMaintenanceMode(item) {
+    switch (item.key) {
+      case MaintenanceModeEnum.ENTER:
+        this.showEnterMaintenanceModeModal();
+        break;
+      case MaintenanceModeEnum.EXIT:
+        this.showExitMaintenanceModeModal();
+        break;
+    }
+  }
+
+  getMaintenanceModeMenu() {
+    return (
+      <Menu onClick={this.enterExitMaintenanceMode}>
+        <Menu.Item key={MaintenanceModeEnum.ENTER}>
+          <LoginOutlined/> 进入维护模式
+
+        </Menu.Item>
+        <Menu.Item key={MaintenanceModeEnum.EXIT}>
+          <LogoutOutlined /> 退出维护模式
+        </Menu.Item>
+      </Menu>
+    );
+  }
+
   render() {
     const { selectedRowKeys } = this.state;
 
     return (
-      <Layout className="node-manage-container">
-        <Header className="node-manage-header">
+      <Layout className="cxkj-node-manage-container">
+        <Header className="node-manage-header cxkj-container-header">
           <div className="operation-list">
-            <Button type="primary" onClick={this.showAddNodeModal}>增加节点</Button>
-            <Button type="primary"
-                    className="delete-node-btn"
-                    disabled={selectedRowKeys == null || selectedRowKeys.length === 0}
-                    onClick={this.showDeleteNodeModal} danger
+            <Button
+              type="primary"
+              onClick={this.showAddNodeModal}
+              icon={<PlusCircleOutlined />}
+            >增加节点</Button>
+            <Button
+                type="primary"
+                className="button-disabled"
+                disabled={selectedRowKeys == null || selectedRowKeys.length === 0}
+                onClick={this.showDeleteNodeModal}
+                icon={<DeleteOutlined />}
+                danger
             >删除节点</Button>
-            <Button type="primary">维护模式</Button>
-            <Button type="primary">内存加速</Button>
-            <Button type="primary">重命名</Button>
+            <Dropdown
+              overlay={this.getMaintenanceModeMenu()}
+              className="button-disabled"
+              disabled={selectedRowKeys == null || selectedRowKeys.length === 0}
+            >
+              <Button type="primary" icon={<ToolOutlined />}>
+                维护模式 <DownOutlined />
+              </Button>
+            </Dropdown>
+            <Button
+              type="primary"
+              icon={<RocketOutlined />}
+            >内存加速</Button>
+            <Button
+                type="primary"
+                className="button-disabled"
+                disabled={selectedRowKeys == null || selectedRowKeys.length === 0}
+                onClick={this.showRenameNodeModal}
+                icon={<EditOutlined />}
+            >重命名</Button>
           </div>
 
           <div className="research-list">
@@ -396,6 +564,25 @@ class Node extends Component<any, INodeState> {
             onCancel={this.hideDeleteNodeModal}
             onOK={this.hideDeleteNodeModal}
             nodeList={this.getNodeListByNames()}
+        />
+
+        <RenameNodeModal
+            nodeNames={this.getNodeNameAndIdList()}
+            visible={this.state.renameNodeModalVisible}
+            addSuccess={this.onRenameNode}
+            onCancel={this.hideRenameNodeModal}
+        />
+
+        <EnterMaintenanceModeModal
+          nodes={this.getNodeNameAndIdList()}
+          visible={this.state.enterMaintenanceModeModalVisible}
+          hideEnterMaintenanceModeModal = {this.hideEnterMaintenanceModeModal}
+        />
+
+        <ExitMaintenanceModeModal
+          nodes={this.getNodeNameAndIdList()}
+          visible={this.state.exitMaintenanceModeModalVisible}
+          hideExitMaintenanceModeModal = {this.hideExitMaintenanceModeModal}
         />
       </Layout>
     );

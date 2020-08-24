@@ -4,8 +4,9 @@ import ContentMain from '../../component/ContentMain/';
 import SideMenu from '../../component/SiderMenu';
 import Copyright from '../../utils/Copyright';
 
+import '../../scss/common.scss';
+import './scss/index.scss';
 
-import './css/index.scss';
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -33,7 +34,7 @@ class Index extends Component<any, IAppState> {
         </Sider>
         <Layout className="site-layout">
           <Header className="site-layout-background" style={{ padding: 0, height: '50px' }} />
-          <Content>
+          <Content className="cxkj-layout-content">
             <ContentMain />
           </Content>
           <Footer style={{ textAlign: 'center', height: '40px', lineHeight: '40px', padding: 0 }} dangerouslySetInnerHTML={{__html: Copyright()}}></Footer>

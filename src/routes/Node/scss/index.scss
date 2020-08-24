@@ -1,19 +1,5 @@
-.node-manage-container {
-  padding: 16px;
-
+.cxkj-node-manage-container {
   .node-manage-header {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 12px;
-    height: 32px;
-    line-height: 32px;
-    padding: 0;
-    background-color: transparent;
-
-    .operation-list {
-
-    }
-
     .research-list {
       .research-item {
         display: inline-block;
@@ -24,20 +10,7 @@
       }
     }
 
-    .ant-btn {
-      margin-right: 8px;
-      margin-bottom: 8px;
 
-      &.delete-node-btn[disabled] {
-        opacity: .6;
-        color: #fff;
-        background-color: #a61d24;
-        border-color: #a61d24;
-        text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.12);
-        -webkit-box-shadow: 0 2px 0 rgba(0, 0, 0, 0.045);
-        box-shadow: 0 2px 0 rgba(0, 0, 0, 0.045);
-      }
-    }
   }
 
   .node-manage-content {
